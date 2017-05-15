@@ -1,0 +1,10 @@
+.channels, .channel {
+  display: inline-block;
+  width: 48%;
+  vertical-align: top;
+}
+.messageBox {
+  border: solid 1px #ccc;
+  height: 100px;
+  overflow: scroll;
+}
