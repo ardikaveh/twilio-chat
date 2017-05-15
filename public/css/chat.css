@@ -49,10 +49,14 @@ textarea, input, button { outline: none; }
 .message.me span {
   background: #71BA51;
   color: white;
+  padding: 4px 12px 5px 12px;
+  border-radius: 14px 4px 14px 14px;
 }
 .message.them span {
-  background: #D2D7D3;
-  color: black;
+  background: #ddd;
+  color: #333;
+  padding: 4px 12px 5px 12px;
+  border-radius: 4px 14px 14px 14px;
 }
 
 .input-wrap {
