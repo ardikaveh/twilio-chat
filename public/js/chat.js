@@ -160,7 +160,8 @@
     }
 
     function sendMessage(message){
-      if(activeChannel) {
+
+      if(activeChannel && message.trim()) {
         activeChannel.sendMessage(message, {});
         activeChannel.updateAttributes({lastMessageTime : Date.now()}).then(function(){
           renderChannels();
