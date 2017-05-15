@@ -4,10 +4,10 @@ body {
 }
 button {
   cursor: pointer;
-  height: 28px;
+  height: 30px;
 }
 input {
-  height: 28px;
+  height: 30px;
 }
 textarea, input, button { outline: none; }
 
@@ -27,14 +27,20 @@ textarea, input, button { outline: none; }
   height: 400px;
   overflow-y: scroll;
 }
+.join-channel.selected {
+  background: #71BA51;
+  color: white;
+}
 .join-channel {
   width: 100%;
-  margin: 2px 0;
+  margin: -1px;
+  border: 1px solid #ccc;
+  background: #eee;
 }
 .active-chats {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 5px 0 0 0;
 }
 .message {
   margin: 10px 5px;
@@ -68,6 +74,6 @@ textarea, input, button { outline: none; }
   border-right: none;
 }
 .chat-info {
-  height: 30px;
+  height: 34px;
   text-align: center;
 }

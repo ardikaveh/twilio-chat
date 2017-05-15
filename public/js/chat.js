@@ -25,11 +25,10 @@
           $('.channel, .channels').show();
 
           //////twilio events
-          chatClient.on('channelAdded', renderChannels);
           chatClient.on('channelJoined', function(channel) {
             //channel.on('messageAdded', updateUnreadMessages);
             if(!channel._events["messageAdded"].length){
-              channel.on('messageAdded', recieveMessage);
+              channel.on('messageAdded', renderChannels);
             }
           });
         });
@@ -106,7 +105,7 @@
 
     }
 
-    function renderChannels(){
+    function renderChannels(input){
       chatClient.getSubscribedChannels().then(function(paginator){
         channels = paginator.items;
         if(channels.length){
@@ -116,7 +115,7 @@
           for (i=0; i<channels.length; i++) {
             var channel = channels[i];
             $activeChats.append('<li><button class="join-channel" id="'+ channel.sid +'">'+ chattingWithName(channel) +'</button></li>');
-            if(!activeChannel && i == 0){
+            if(i == 0){
               setActiveChannel(channel.sid);
             }
           }
@@ -127,14 +126,6 @@
     function renderChatStatus(){
       $('.chat-info').html(chattingWithName(activeChannel));
     }
-
-    function recieveMessage(message){
-      renderChannels();
-      if(activeChannel.sid == message.channel.sid){
-        renderMessage(message);
-      }
-    }
-
 
 
 
@@ -147,9 +138,10 @@
         //create channel, join it, add other user
         createChannel(userName).then(function(channel){
           channel.join().then(function(channel){
-            activeChannel = channel;
+            //activeChannel = channel;
             channel.add(userName);
-            setActiveChannel(activeChannel.sid)
+            renderChannels();
+            setTimeout(function(){ setActiveChannel(channel.sid) }, 1000);
           });
         });
       });
@@ -160,6 +152,8 @@
     }
 
     function setActiveChannel(channelId){
+      $('.join-channel').removeClass('selected');
+      $('#' + channelId).addClass('selected');
       activeChannel = channels.find(function(channel){ return channel.sid === channelId; })
       renderChatStatus();
       renderChannel();
