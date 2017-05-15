@@ -6,20 +6,23 @@
     var activeChannel = null;
     var channels = {};
     var chatClient = {};
-    
+
     if(!me) return;
     $('.me').val(me);
     document.title = me;
 
     fingerprint.get(function(endpointId) {
       getToken(me, endpointId).done(function(token){
-    
+
         // accessManager = new Twilio.AccessManager(token);
         // accessManager.on('tokenUpdated', am => client.updateToken(am.token));
         chatClient = new Twilio.Chat.Client(token, { logLevel: 'debug' });
         chatClient.initialize().then(() => {
-          renderChannels(); 
+          renderChannels();
           renderConnectionStatus();
+
+          $('.loading').hide();
+          $('.channel, .channels').show();
 
           //////twilio events
           chatClient.on('channelAdded', renderChannels);
@@ -32,37 +35,47 @@
         });
       });
     });
-    
+
 
     //////ui events
-    $('.startChat').on('click', function(){
-      startChat($('.defaultThem').val());
-      $('.message').val('');
+    $('.start-chat').on('click', function(){
+      startChat($('.default-them').val());
     });
 
-    $('.sendchat').on('click', function(){
-      sendMessage($('.message').val());
-      $('.message').val('');
+    $('.message-input').on('keypress', function(e){
+      if(e.keyCode === 13){
+        e.preventDefault();
+        $('.send-chat').trigger('click');
+      }
     });
 
-    $('.activeChats').on('click', '.channel', function(e){
+    $('.send-chat').on('click', function(){
+      var $messageInput = $('.message-input');
+      if($messageInput) {
+        sendMessage($messageInput.val());
+        $messageInput.val('');
+      }
+
+    });
+
+    $('.active-chats').on('click', '.join-channel', function(e){
       setActiveChannel(e.target.id);
     });
-      
-    
+
+
 
     ///////render
 
     function renderConnectionStatus(){
-      var connectionInfo = $('.connectionStatus');
-      connectionInfo.html(chatClient.connectionState);
+      var connectionInfo = $('.connection-status');
+      connectionInfo.html('status: ' + chatClient.connectionState);
       chatClient.on('connectionStateChanged', function(state) {
-        connectionInfo.html(chatClient.connectionState);
+        connectionInfo.html('status: ' + chatClient.connectionState);
       });
     }
 
     function renderMessages(messages){
-      $('.messageBox').html('');
+      $('.message-box').html('');
       messages.items.forEach(function(message){
         renderMessage(message);
       });
@@ -70,9 +83,10 @@
 
 
     function renderMessage(message){
-      $('.messageBox').append('<span>'+ message.author + ':</span>' + '<span>'+ message.body + '<br/></span>');
-      var height = $('.messageBox')[0].scrollHeight;
-      $('.messageBox').scrollTop(height);
+      var messageClass = message.author == me ? 'me' : 'them';
+      $('.message-box').append('<div class="message ' + messageClass + '"><span>'+ message.body + '</span></div>');
+      var height = $('.message-box')[0].scrollHeight;
+      $('.message-box').scrollTop(height);
     }
 
     function renderChannel(){
@@ -89,27 +103,29 @@
           renderMessages(messages)
         });
       }
-      
+
     }
 
     function renderChannels(){
       chatClient.getSubscribedChannels().then(function(paginator){
         channels = paginator.items;
-        var $activeChats = $('.activeChats');
-        $activeChats.html('');
-        channels.sort(sortByLastMessageTime);
-        for (i=0; i<channels.length; i++) {
-          var channel = channels[i];
-          $activeChats.append('<li><button class="channel" id="'+ channel.sid +'">'+ chattingWithName(channel) +'</button></li>');
-          if(!activeChannel && i == 0){
-            setActiveChannel(channel.sid);
+        if(channels.length){
+          var $activeChats = $('.active-chats');
+          $activeChats.html('');
+          channels.sort(sortByLastMessageTime);
+          for (i=0; i<channels.length; i++) {
+            var channel = channels[i];
+            $activeChats.append('<li><button class="join-channel" id="'+ channel.sid +'">'+ chattingWithName(channel) +'</button></li>');
+            if(!activeChannel && i == 0){
+              setActiveChannel(channel.sid);
+            }
           }
         }
       });
     }
 
     function renderChatStatus(){
-      $('.chatInfo').html('activeChannel: ' + chattingWithName(activeChannel) + '<br>');
+      $('.chat-info').html(chattingWithName(activeChannel));
     }
 
     function recieveMessage(message){
@@ -144,7 +160,7 @@
     }
 
     function setActiveChannel(channelId){
-      activeChannel = channels.find(function(channel){ return channel.sid === channelId; })  
+      activeChannel = channels.find(function(channel){ return channel.sid === channelId; })
       renderChatStatus();
       renderChannel();
     }
@@ -154,7 +170,7 @@
         activeChannel.sendMessage(message, {});
         activeChannel.updateAttributes({lastMessageTime : Date.now()}).then(function(){
           renderChannels();
-        }); 
+        });
       }
       else {
         console.log('should never be sending in a non active channel');
@@ -175,7 +191,7 @@
     }
 
     function getToken(userEmail, endpointId) {
-      return $.get('getToken?identity=' + userEmail + '&endpointId=' + endpointId);   
+      return $.get('getToken?identity=' + userEmail + '&endpointId=' + endpointId);
     }
 
 

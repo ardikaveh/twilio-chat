@@ -1,10 +1,69 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  line-height: 1.6em;
+}
+button {
+  cursor: pointer;
+  height: 28px;
+}
+input {
+  height: 28px;
+}
+textarea, input, button { outline: none; }
+
+.connection-status {
+  text-align: center;
+  text-decoration: underline;
+  color: gray;
+}
 .channels, .channel {
   display: inline-block;
   width: 48%;
   vertical-align: top;
 }
-.messageBox {
+.message-box {
   border: solid 1px #ccc;
-  height: 100px;
-  overflow: scroll;
+  border-bottom: none;
+  height: 400px;
+  overflow-y: scroll;
+}
+.join-channel {
+  width: 100%;
+  margin: 2px 0;
+}
+.active-chats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.message {
+  margin: 10px 5px;
+}
+.message span{
+  padding: 5px;
+  border-radius: 5px;
+}
+.message.me {
+  text-align: right;
+}
+.message.me span {
+  background: #71BA51;
+  color: white;
+}
+.message.them span {
+  background: #D2D7D3;
+  color: black;
+}
+
+.input-wrap {
+  display: flex;
+}
+.message-input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-right: none;
+}
+.chat-info {
+  height: 30px;
+  text-align: center;
 }
